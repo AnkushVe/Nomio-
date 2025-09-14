@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # TravelPlanner - AI-Powered Travel Itinerary Generator
 
 A modern, AI-powered travel planner that creates detailed itineraries based on your source, destination, and preferences. Built with React TypeScript, Node.js, and integrated with Gemini AI and Mapbox.
@@ -249,3 +250,6 @@ MIT License - see LICENSE file for details.
 - Powered by Google Gemini AI
 - Maps by Mapbox
 - Icons by Lucide React
+=======
+# travel-planner
+>>>>>>> 17d0c95334a053a86f39ec09448f13ca2ff356b7
