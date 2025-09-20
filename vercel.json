@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "client/build/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "server/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/build/$1"
+    }
+  ],
+  "env": {
+    "GOOGLE_MAPS_API_KEY": "@google_maps_api_key",
+    "GEMINI_API_KEY": "@gemini_api_key"
+  }
+}
