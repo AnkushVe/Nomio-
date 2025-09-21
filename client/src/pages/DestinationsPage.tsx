@@ -148,7 +148,7 @@ const DestinationsPage: React.FC = () => {
   useEffect(() => {
     setDestinations(popularDestinations);
     initializeMap();
-  }, []);
+  }, [popularDestinations]);
 
   const initializeMap = () => {
     if (mapRef.current && window.google) {

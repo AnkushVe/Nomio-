@@ -162,7 +162,7 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ onMessage, onResponse, onLocation
     } catch (error) {
       console.error('Error processing wake word audio:', error);
     }
-  }, []);
+  }, [stopContinuousListening]);
 
   // Start continuous listening for wake words
   const startContinuousListening = useCallback(async () => {
@@ -218,7 +218,7 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ onMessage, onResponse, onLocation
         clearTimeout(timeoutId);
       }
     };
-  }, [startContinuousListening]);
+  }, [startContinuousListening, stopContinuousListening]);
 
   return (
     <div className="flex items-center justify-center space-x-4">
