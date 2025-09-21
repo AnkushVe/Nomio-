@@ -1,11 +1,13 @@
 # 🌍 Nomio - AI-Powered Travel Planner
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-blue?style=for-the-badge&logo=vercel)](https://nomio-travel-planner.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-blue?style=for-the-badge&logo=vercel)](https://nomio-vqoy.vercel.app)
 [![GitHub License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Latest-green?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.3-blue?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 
-> **We don't just plan trips, we plan your kind of trip** — whether you're traveling with family, friends, solo, or even pets.
+> **"We don't just plan trips, we plan your kind of trip"** — Whether you're traveling with family, friends, solo, or even pets, Nomio creates personalized travel experiences powered by cutting-edge AI.
 
 ![Nomio Travel Planner](https://img.shields.io/badge/Nomio-AI%20Travel%20Planner-purple?style=for-the-badge)
 

@@ -1,3 +1,15 @@
+/**
+ * Nomio - AI-Powered Travel Planner
+ * Main Application Component
+ * 
+ * Features:
+ * - Multi-page navigation (Home, Explore, Destinations)
+ * - AI-powered travel planning
+ * - Google Maps integration
+ * - Voice chat interface
+ * - Real-time analytics tracking
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/Navbar';
@@ -7,6 +19,7 @@ import ExplorePage from './pages/ExplorePage';
 import DestinationsPage from './pages/DestinationsPage';
 import './App.css';
 
+// Type definitions for travel planning data
 interface ItineraryData {
   itinerary: Array<{
     day: number;
@@ -37,13 +50,21 @@ interface User {
   safetyLevel: string;
 }
 
+/**
+ * Main App Component
+ * Handles routing between different pages and manages global state
+ */
 function App() {
+  // State management for navigation and user data
+  const [currentPage, setCurrentPage] = useState<'home' | 'explore' | 'destinations'>('home');
   const [itineraryData] = useState<ItineraryData | null>(null);
   const [isLoading] = useState(false);
   const [user] = useState<User | null>(null);
-  const [currentPage, setCurrentPage] = useState<'home' | 'explore' | 'destinations'>('home');
 
-  // Listen for navigation events from Hero component
+  /**
+   * Navigation event listener
+   * Handles custom navigation events from child components
+   */
   useEffect(() => {
     const handleNavigate = (event: CustomEvent) => {
       if (typeof event.detail === 'string') {
@@ -63,19 +84,26 @@ function App() {
     };
   }, []);
 
-
+  /**
+   * Navigation handler for navbar
+   * @param page - Target page to navigate to
+   */
   const navigateToPage = (page: 'home' | 'explore' | 'destinations') => {
     setCurrentPage(page);
   };
 
   return (
     <div className="App min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      {/* Navigation Bar */}
       <Navbar 
         user={user}
         currentPage={currentPage}
         onNavigate={navigateToPage}
       />
+      
+      {/* Main Content Area */}
       <main>
+        {/* Home Page - Hero section and itinerary display */}
         {currentPage === 'home' && (
           <>
             <Hero />
@@ -87,13 +115,19 @@ function App() {
             )}
           </>
         )}
+        
+        {/* Explore Page - AI chat and map interface */}
         {currentPage === 'explore' && (
           <ExplorePage />
         )}
+        
+        {/* Destinations Page - Destination search and exploration */}
         {currentPage === 'destinations' && (
           <DestinationsPage />
         )}
       </main>
+      
+      {/* Vercel Analytics for tracking */}
       <Analytics />
     </div>
   );

@@ -1,8 +1,23 @@
+/**
+ * Hero Component - Landing Page Header
+ * 
+ * Features:
+ * - Animated hero section with floating particles
+ * - Travel mode selection (Family, Solo, Friends, etc.)
+ * - Feature showcase with interactive modals
+ * - Call-to-action buttons for navigation
+ * - Memories and feature modals integration
+ */
+
 import React, { useEffect, useState } from 'react';
 import { MapPin, Plane, Compass, Sparkles, Globe, ExternalLink, CreditCard, Smartphone, Shield, Backpack, Cloud } from 'lucide-react';
 import MemoriesModal from './MemoriesModal';
 import FeatureModal from './FeatureModal';
 
+/**
+ * Hero Component
+ * Main landing page component with animations and feature showcase
+ */
 const Hero: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, delay: number}>>([]);

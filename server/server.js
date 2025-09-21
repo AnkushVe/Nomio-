@@ -1,3 +1,25 @@
+/**
+ * Nomio Travel Planner - Backend Server
+ * 
+ * Features:
+ * - Multi-agent AI system (Pre-trip, In-trip, Post-trip)
+ * - Google Generative AI integration
+ * - Travel partner pricing API
+ * - Voice chat processing
+ * - Itinerary generation
+ * - Real-time travel assistance
+ * 
+ * API Endpoints:
+ * - /api/health - Health check
+ * - /api/chat-travel - Main AI chat interface
+ * - /api/chat-travel-enhanced - Enhanced AI with multi-agent support
+ * - /api/voice-chat - Voice input processing
+ * - /api/generate-itinerary - AI itinerary generation
+ * - /api/pre-trip-planning - Pre-trip assistance
+ * - /api/in-trip-assistance - Real-time travel help
+ * - /api/post-trip-feedback - Post-trip feedback processing
+ */
+
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -6,22 +28,23 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const AIAgent = require('./aiAgent');
 const TravelPartnerPricesAPI = require('./services/travelPartnerPricesAPI');
 
+// Load environment variables
 dotenv.config();
 
+// Initialize Express application
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Middleware
+// Middleware configuration
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-
-// Initialize Gemini AI
+// Initialize Google Generative AI
 const apiKey = process.env.GEMINI_API_KEY || 'AIzaSyB-PrgOgduiXNI5GBfC4hhr_fg5iyBs7h0';
 const genAI = new GoogleGenerativeAI(apiKey);
 
-// Initialize AI Agent
+// Initialize AI Agent for multi-agent system
 const aiAgent = new AIAgent();
 
 // Initialize Travel Partner Prices API

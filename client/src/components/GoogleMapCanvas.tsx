@@ -1,7 +1,21 @@
+/**
+ * GoogleMapCanvas Component - Interactive Map Interface
+ * 
+ * Features:
+ * - Google Maps integration with custom styling
+ * - Itinerary visualization with markers and polylines
+ * - Real-time weather display overlay
+ * - Street View integration
+ * - Interactive place details and photos
+ * - Voice response generation for map interactions
+ * - Travel mode-specific map styling
+ */
+
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import axios from 'axios';
 import WeatherDisplay from './WeatherDisplay';
 
+// Type definitions for travel activities and itinerary data
 interface Activity { 
   time: string; 
   activity: string; 
@@ -13,8 +27,15 @@ interface Activity {
   aqi?: string;
   aqiValue?: number;
 }
-interface Day { day: number; date: string; title: string; activities: Activity[]; }
 
+interface Day { 
+  day: number; 
+  date: string; 
+  title: string; 
+  activities: Activity[]; 
+}
+
+// Component props interface
 interface GoogleMapCanvasProps {
   itinerary: Day[] | any;
   weather?: any;
@@ -25,6 +46,7 @@ interface GoogleMapCanvasProps {
   travelMode?: string;
 }
 
+// Global Google Maps API declaration
 declare const google: any;
 
 const GoogleMapCanvas: React.FC<GoogleMapCanvasProps> = ({ itinerary, weather, city, onSelectLocation, onVoiceResponse, mapData, travelMode }) => {
