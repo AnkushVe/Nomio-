@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { MapPin, Star, DollarSign, Camera, Search, Filter, Globe, Utensils, Hotel, Car, Mountain, Building, Heart, Coffee, ShoppingBag, Plane } from 'lucide-react';
 
 interface Place {
@@ -62,7 +62,7 @@ const DestinationsPage: React.FC = () => {
   ];
 
   // Popular destinations data
-  const popularDestinations: Destination[] = [
+  const popularDestinations: Destination[] = useMemo(() => [
     {
       name: 'Paris',
       country: 'France',
@@ -143,7 +143,7 @@ const DestinationsPage: React.FC = () => {
       bestTime: 'September - November, March - May',
       budget: '$$$'
     }
-  ];
+  ], []);
 
   useEffect(() => {
     setDestinations(popularDestinations);

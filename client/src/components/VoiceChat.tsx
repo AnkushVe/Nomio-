@@ -204,6 +204,9 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ onMessage, onResponse, onLocation
   useEffect(() => {
     audioRef.current = new Audio();
     
+    // Capture the timeout ref value at the beginning
+    const currentTimeoutRef = wakeWordTimeoutRef.current;
+    
     // Start continuous listening for wake words
     startContinuousListening();
     
@@ -213,9 +216,8 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ onMessage, onResponse, onLocation
         audioRef.current = null;
       }
       stopContinuousListening();
-      const timeoutId = wakeWordTimeoutRef.current;
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (currentTimeoutRef) {
+        clearTimeout(currentTimeoutRef);
       }
     };
   }, [startContinuousListening, stopContinuousListening]);
