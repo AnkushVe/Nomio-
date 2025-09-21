@@ -138,6 +138,14 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ onMessage, onResponse, onLocation
     return false;
   };
 
+  // Stop continuous listening
+  const stopContinuousListening = useCallback(() => {
+    if (continuousRecorderRef.current && isListening) {
+      continuousRecorderRef.current.stop();
+      setIsListening(false);
+    }
+  }, [isListening]);
+
   // Process audio for wake word detection
   const processWakeWordAudio = useCallback(async (audioBlob: Blob) => {
     try {
@@ -190,14 +198,6 @@ const VoiceChat: React.FC<VoiceChatProps> = ({ onMessage, onResponse, onLocation
       console.error('Error starting continuous listening:', error);
     }
   }, [processWakeWordAudio]);
-
-  // Stop continuous listening
-  const stopContinuousListening = useCallback(() => {
-    if (continuousRecorderRef.current && isListening) {
-      continuousRecorderRef.current.stop();
-      setIsListening(false);
-    }
-  }, [isListening]);
 
 
   // Initialize audio context and start continuous listening
