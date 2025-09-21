@@ -1,6 +1,7 @@
 {
-  "name": "travel-planner-client",
+  "name": "nomio-client",
   "version": "1.0.0",
+  "description": "Nomio Travel Planner - React Frontend",
   "private": true,
   "dependencies": {
     "@types/node": "^16.18.68",
