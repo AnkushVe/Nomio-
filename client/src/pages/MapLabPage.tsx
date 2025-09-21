@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import GoogleMapCanvas from '../components/GoogleMapCanvas';
 import VoiceChat from '../components/VoiceChat';
@@ -70,6 +70,44 @@ const ExplorePage: React.FC = () => {
       }
     }
   }, [messages.length]); // Only trigger when message count changes
+
+  // Memoized callback functions to prevent map re-renders
+  const handleMapLocationSelect = useCallback(async (name: string) => {
+    const quick = { id: Date.now().toString(), type: 'user' as const, content: name, timestamp: new Date() };
+    setMessages(prev => [...prev, quick]);
+    try {
+      const response = await axios.post('/api/chat-travel', {
+        message: name,
+        conversationHistory: [...messages, quick],
+        currentLocation,
+        userId: userId
+      });
+      const aiMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'ai' as const,
+        content: response.data.message,
+        timestamp: new Date(),
+        action: response.data.action,
+        quickReplies: response.data.quickReplies || []
+      };
+      setMessages(prev => [...prev, aiMessage]);
+      if (response.data.mapData) setData(response.data.mapData);
+      if (response.data.location) setCurrentLocation(response.data.location);
+    } catch (error) {
+      console.error('Error handling map click:', error);
+    }
+  }, [messages, currentLocation, userId]);
+
+  const handleMapVoiceResponse = useCallback((response: string) => {
+    // Add the voice response to chat
+    const voiceMessage = {
+      id: Date.now().toString(),
+      type: 'ai' as const,
+      content: response,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, voiceMessage]);
+  }, []);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isTyping) return;
@@ -275,35 +313,8 @@ const ExplorePage: React.FC = () => {
                   city={currentLocation}
                   mapData={data}
                   travelMode={travelMode}
-                  onSelectLocation={async (name: string) => {
-                    const quick = { id: Date.now().toString(), type: 'user' as const, content: name, timestamp: new Date() };
-                    setMessages(prev => [...prev, quick]);
-                    try {
-                      const response = await axios.post('/api/chat-travel', {
-                        message: name,
-                        conversationHistory: [...messages, quick],
-                        currentLocation,
-                        userId: userId
-                      });
-                      const aiMessage = {
-                        id: (Date.now() + 1).toString(),
-                        type: 'ai' as const,
-                        content: response.data.message,
-                        timestamp: new Date(),
-                        action: response.data.action,
-                        quickReplies: response.data.quickReplies || []
-                      };
-                      setMessages(prev => [...prev, aiMessage]);
-                      if (response.data.mapData) setData(response.data.mapData);
-                      if (response.data.location) setCurrentLocation(response.data.location);
-                    } catch (error) {
-                      console.error('Error handling map click:', error);
-                    }
-                  }}
-                  onVoiceResponse={(response: string) => {
-                    // Don't add duplicate messages here - let handleVoiceResponse handle it
-                    handleVoiceResponse(response);
-                  }}
+                  onSelectLocation={handleMapLocationSelect}
+                  onVoiceResponse={handleMapVoiceResponse}
                 />
               </div>
             </div>
