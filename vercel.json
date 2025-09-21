@@ -11,7 +11,10 @@
     },
     {
       "src": "server/server.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 30
+      }
     }
   ],
   "routes": [
@@ -26,17 +29,5 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  },
-  "functions": {
-    "server/server.js": {
-      "maxDuration": 30
-    }
-  },
-  "build": {
-    "env": {
-      "GOOGLE_MAPS_API_KEY": "@google_maps_api_key",
-      "GEMINI_API_KEY": "@gemini_api_key",
-      "PORT": "5002"
-    }
   }
 }
