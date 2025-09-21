@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plane, Calendar, DollarSign, Heart, Users, Shield, Utensils } from 'lucide-react';
 import axios from 'axios';
-import MultiAgentPanel from './MultiAgentPanel';
-import AgentResponse from './AgentResponse';
 
 interface City {
   name: string;
@@ -40,18 +38,18 @@ interface User {
   safetyLevel: string;
 }
 
-interface TravelPlannerProps {
+interface TravelPlannerPageProps {
   onItineraryGenerated: (data: ItineraryData) => void;
   onLoading: (loading: boolean) => void;
   user?: User | null;
-  isAuthenticated?: boolean;
-  onShowAuth?: () => void;
 }
 
-const TravelPlanner: React.FC<TravelPlannerProps> = ({ onItineraryGenerated, onLoading, user, isAuthenticated, onShowAuth }) => {
+const TravelPlannerPage: React.FC<TravelPlannerPageProps> = ({ 
+  onItineraryGenerated, 
+  onLoading, 
+  user
+}) => {
   const [source, setSource] = useState<City | null>(null);
-  const [activeAgent, setActiveAgent] = useState<string>('pre-trip');
-  const [agentResponse, setAgentResponse] = useState<any>(null);
   const [destination, setDestination] = useState<City | null>(null);
   const [duration, setDuration] = useState<number>(7);
   const [interests, setInterests] = useState<string>('');
@@ -111,78 +109,34 @@ const TravelPlanner: React.FC<TravelPlannerProps> = ({ onItineraryGenerated, onL
     }
   }, [destinationSearch, cities]);
 
-  // Handle multi-agent requests
-  const handleMultiAgentRequest = async (message: string) => {
-    try {
-      const response = await axios.post('http://localhost:5001/api/chat-travel-enhanced', {
-        message,
-        userId: user?.id || 'default',
-        currentLocation: destination ? `${destination.name}, ${destination.country}` : null,
-        tripPhase: activeAgent
-      });
-
-      if (response.data) {
-        setAgentResponse(response.data);
-        
-        // If it's a pre-trip request and we have destination, show the data
-        if (activeAgent === 'pre-trip' && response.data.preTripData) {
-          setAgentResponse(response.data.preTripData);
-        } else if (activeAgent === 'in-trip' && response.data.inTripData) {
-          setAgentResponse(response.data.inTripData);
-        } else if (activeAgent === 'post-trip' && response.data.postTripData) {
-          setAgentResponse(response.data.postTripData);
-        }
-      }
-    } catch (error) {
-      console.error('Error with multi-agent request:', error);
-      alert('Failed to process request. Please try again.');
-    }
-  };
-
-  const handleGenerateItinerary = async () => {
+  const generateItinerary = async () => {
     if (!source || !destination) {
       alert('Please select both source and destination cities');
       return;
     }
 
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-      if (onShowAuth) {
-        onShowAuth();
-      } else {
-        alert('Please login to generate your personalized itinerary');
-      }
-      return;
-    }
-
-    // If using multi-agent system, handle differently
-    if (activeAgent !== 'pre-trip') {
-      const message = `Plan a trip to ${destination.name}, ${destination.country} for ${duration} days. Interests: ${interests}. Budget: ${budget}. Group type: ${user?.groupType || 'friends'}`;
-      await handleMultiAgentRequest(message);
-      return;
-    }
-
-    onLoading(true);
     try {
-      const response = await axios.post('/api/generate-itinerary', {
-        source,
-        destination,
-        duration,
-        interests,
-        budget,
-        groupType,
-        dietary,
-        safetyLevel,
-        user: user ? {
-          name: user.name,
-          groupType: user.groupType
-        } : null
-      });
+      onLoading(true);
       
-      onItineraryGenerated(response.data);
+      const response = await axios.post('/api/generate-itinerary', {
+        source: source,
+        destination: destination,
+        duration: duration,
+        interests: interests,
+        budget: budget,
+        groupType: groupType,
+        dietary: dietary,
+        safetyLevel: safetyLevel
+      });
+
+      if (response.data.success) {
+        onItineraryGenerated(response.data.data);
+      } else {
+        alert('Failed to generate itinerary. Please try again.');
+      }
     } catch (error) {
       console.error('Error generating itinerary:', error);
-      alert('Failed to generate itinerary. Please try again.');
+      alert('Error generating itinerary. Please try again.');
     } finally {
       onLoading(false);
     }
@@ -206,32 +160,22 @@ const TravelPlanner: React.FC<TravelPlannerProps> = ({ onItineraryGenerated, onL
   ];
 
   return (
-    <section id="travel-planner" className="py-20 bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
             Plan Your Perfect Trip
-          </h2>
-          
-          {/* Multi-Agent Panel */}
-          <MultiAgentPanel 
-            onAgentSelect={setActiveAgent}
-            activeAgent={activeAgent}
-          />
-          
-          {/* Agent Response Display */}
-          {agentResponse && (
-            <AgentResponse 
-              response={agentResponse}
-              agentType={activeAgent}
-            />
-          )}
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          </h1>
+          <p className="text-xl text-blue-100 max-w-3xl mx-auto">
             Tell us where you're going and we'll create a detailed itinerary just for you
           </p>
         </div>
+      </div>
 
-        <div className="bg-gray-50 rounded-3xl p-8 md:p-12">
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             {/* Source City */}
             <div className="space-y-4">
@@ -365,69 +309,84 @@ const TravelPlanner: React.FC<TravelPlannerProps> = ({ onItineraryGenerated, onL
             </div>
           </div>
 
-          {/* Login Prompt for Unauthenticated Users */}
-          {!isAuthenticated && (
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <Users className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-blue-900">Personalized Experience</h3>
-                    <p className="text-xs text-blue-700">Login to get AI-powered recommendations tailored to your preferences</p>
-                  </div>
-                </div>
-                <button
-                  onClick={onShowAuth}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+          {/* Advanced Preferences */}
+          <div className="bg-gray-50 rounded-2xl p-6 mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-6">Advanced Preferences</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Group Type */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  <Users className="inline-block w-4 h-4 mr-2" />
+                  Group Type
+                </label>
+                <select
+                  value={groupType}
+                  onChange={(e) => setGroupType(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  Login
-                </button>
+                  <option value="solo">Solo Travel</option>
+                  <option value="couple">Couple</option>
+                  <option value="friends">Friends</option>
+                  <option value="family">Family</option>
+                  <option value="business">Business</option>
+                </select>
               </div>
+
+              {/* Dietary Preferences */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  <Utensils className="inline-block w-4 h-4 mr-2" />
+                  Dietary
+                </label>
+                <select
+                  value={dietary}
+                  onChange={(e) => setDietary(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="no-preference">No Preference</option>
+                  <option value="vegetarian">Vegetarian</option>
+                  <option value="vegan">Vegan</option>
+                  <option value="halal">Halal</option>
+                  <option value="kosher">Kosher</option>
+                  <option value="gluten-free">Gluten-Free</option>
+                </select>
+              </div>
+
+              {/* Safety Level */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  <Shield className="inline-block w-4 h-4 mr-2" />
+                  Safety Level
+                </label>
+                <select
+                  value={safetyLevel}
+                  onChange={(e) => setSafetyLevel(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="standard">Standard</option>
+                  <option value="conservative">Conservative</option>
+                  <option value="adventurous">Adventurous</option>
+                </select>
+              </div>
+
             </div>
-          )}
+          </div>
 
           {/* Generate Button */}
-          <div className="text-center space-y-4">
+          <div className="text-center">
             <button
-              onClick={handleGenerateItinerary}
-              className={`px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 ${
-                isAuthenticated 
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700' 
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-              disabled={!isAuthenticated}
+              onClick={generateItinerary}
+              disabled={!source || !destination}
+              className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-12 py-4 rounded-2xl text-lg font-semibold hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-1 hover:scale-105"
             >
-              <Plane className="inline-block w-5 h-5 mr-2" />
-              {isAuthenticated ? 'Generate My Itinerary' : 'Login to Generate Itinerary'}
+              Generate My Itinerary
             </button>
-            
-            {/* Multi-Agent Request Button */}
-            {isAuthenticated && destination && (
-              <div className="mt-4">
-                <button
-                  onClick={() => {
-                    const message = `I need ${activeAgent} help for my trip to ${destination.name}, ${destination.country}`;
-                    handleMultiAgentRequest(message);
-                  }}
-                  className={`px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
-                    activeAgent === 'pre-trip' ? 'bg-blue-500 hover:bg-blue-600 text-white' :
-                    activeAgent === 'in-trip' ? 'bg-green-500 hover:bg-green-600 text-white' :
-                    'bg-purple-500 hover:bg-purple-600 text-white'
-                  }`}
-                >
-                  {activeAgent === 'pre-trip' && '🛫 Get Pre-Trip Planning'}
-                  {activeAgent === 'in-trip' && '✈️ Get In-Trip Assistance'}
-                  {activeAgent === 'post-trip' && '🏠 Share Trip Feedback'}
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
-export default TravelPlanner;
+export default TravelPlannerPage;
+

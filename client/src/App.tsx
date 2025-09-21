@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import TravelPlanner from './components/TravelPlanner';
 import ItineraryDisplay from './components/ItineraryDisplay';
-import Footer from './components/Footer';
+import ExplorePage from './pages/ExplorePage';
+import DestinationsPage from './pages/DestinationsPage';
 import './App.css';
 
 interface ItineraryData {
@@ -27,35 +27,72 @@ interface ItineraryData {
   };
 }
 
+interface User {
+  id: string;
+  phoneNumber: string;
+  name: string;
+  groupType: string;
+  dietary: string;
+  safetyLevel: string;
+}
+
 function App() {
-  const [itineraryData, setItineraryData] = useState<ItineraryData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [itineraryData] = useState<ItineraryData | null>(null);
+  const [isLoading] = useState(false);
+  const [user] = useState<User | null>(null);
+  const [currentPage, setCurrentPage] = useState<'home' | 'explore' | 'destinations'>('home');
 
-  const handleItineraryGenerated = (data: ItineraryData) => {
-    setItineraryData(data);
-  };
+  // Listen for navigation events from Hero component
+  useEffect(() => {
+    const handleNavigate = (event: CustomEvent) => {
+      if (typeof event.detail === 'string') {
+        setCurrentPage(event.detail as 'home' | 'explore' | 'destinations');
+      } else if (event.detail && event.detail.section) {
+        setCurrentPage(event.detail.section as 'home' | 'explore' | 'destinations');
+        // Handle destination pre-filling if needed
+        if (event.detail.destination) {
+          console.log('Navigating to:', event.detail.section, 'with destination:', event.detail.destination);
+        }
+      }
+    };
 
-  const handleLoading = (loading: boolean) => {
-    setIsLoading(loading);
+    window.addEventListener('navigate', handleNavigate as EventListener);
+    return () => {
+      window.removeEventListener('navigate', handleNavigate as EventListener);
+    };
+  }, []);
+
+
+  const navigateToPage = (page: 'home' | 'explore' | 'destinations') => {
+    setCurrentPage(page);
   };
 
   return (
-    <div className="App min-h-screen bg-gray-50">
-      <Navbar />
+    <div className="App min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <Navbar 
+        user={user}
+        currentPage={currentPage}
+        onNavigate={navigateToPage}
+      />
       <main>
-        <Hero />
-        <TravelPlanner 
-          onItineraryGenerated={handleItineraryGenerated}
-          onLoading={handleLoading}
-        />
-        {itineraryData && (
-          <ItineraryDisplay 
-            data={itineraryData} 
-            isLoading={isLoading}
-          />
+        {currentPage === 'home' && (
+          <>
+            <Hero />
+            {itineraryData && (
+              <ItineraryDisplay 
+                data={itineraryData} 
+                isLoading={isLoading}
+              />
+            )}
+          </>
+        )}
+        {currentPage === 'explore' && (
+          <ExplorePage />
+        )}
+        {currentPage === 'destinations' && (
+          <DestinationsPage />
         )}
       </main>
-      <Footer />
     </div>
   );
 }

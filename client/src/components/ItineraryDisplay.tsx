@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Clock, MapPin, DollarSign, ChevronRight, ChevronDown, Download, Share2, Mail } from 'lucide-react';
 import axios from 'axios';
-import MapView from './MapView';
 
 interface ItineraryData {
   itinerary: Array<{
@@ -312,10 +311,10 @@ const ItineraryDisplay: React.FC<ItineraryDisplayProps> = ({ data, isLoading }) 
           </div>
         </div>
 
-        {/* Map View */}
+        {/* Map View - Removed Mapbox dependency */}
         {showMap && (
-          <div className="mt-12">
-            <MapView itinerary={data.itinerary} />
+          <div className="mt-12 p-8 bg-gray-100 rounded-lg text-center">
+            <p className="text-gray-600">Map view not available - using Google Maps in main interface</p>
           </div>
         )}
 

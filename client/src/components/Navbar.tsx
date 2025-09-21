@@ -1,63 +1,86 @@
 import React, { useState } from 'react';
-import { MapPin, Plane, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
-const Navbar: React.FC = () => {
+interface User {
+  id: string;
+  phoneNumber: string;
+  name: string;
+  groupType: string;
+  dietary: string;
+  safetyLevel: string;
+}
+
+interface NavbarProps {
+  user?: User | null;
+  currentPage?: 'home' | 'explore' | 'destinations';
+  onNavigate?: (page: 'home' | 'explore' | 'destinations') => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ user, currentPage, onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const scrollToTravelPlanner = () => {
-    const element = document.getElementById('travel-planner');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  const handleNavigation = (page: 'home' | 'explore' | 'destinations') => {
+    if (onNavigate) {
+      onNavigate(page);
     }
+    setIsMenuOpen(false);
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <nav className="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-50 shadow-lg" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.15) 1px, transparent 0)', backgroundSize: '20px 20px'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-24">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
-              <Plane className="w-5 h-5 text-white" />
+          <button
+            type="button"
+            onClick={() => handleNavigation('home')}
+            title="Go to Home"
+            className="flex items-center space-x-6 group cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/30 rounded-full"
+          >
+            <img 
+              src="/Logo.png" 
+              alt="Nomio Logo" 
+              className="h-20 w-20 rounded-full object-cover drop-shadow-xl transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3 hover:animate-spin"
+            />
+            <div className="flex flex-col text-left select-none">
+              <span className="text-4xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent transition-transform duration-300 group-hover:translate-x-0.5">Nomio</span>
+              <span className="text-sm font-semibold text-gray-700 tracking-wider">AI Travel Planner</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">TravelPlanner</span>
-          </div>
+          </button>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#home" className="text-gray-700 hover:text-blue-600 transition-colors">
-              Home
-            </a>
+          <div className="hidden md:flex items-center space-x-10">
             <button 
-              onClick={scrollToTravelPlanner}
-              className="text-gray-700 hover:text-blue-600 transition-colors"
+              onClick={() => handleNavigation('home')}
+              className={`transition-colors font-semibold ${
+                currentPage === 'home' 
+                  ? 'text-blue-600' 
+                  : 'text-gray-800 hover:text-blue-600'
+              }`}
             >
-              Travel Planner
+              Home
             </button>
-            <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors">
-              Features
-            </a>
-            <a href="#about" className="text-gray-700 hover:text-blue-600 transition-colors">
-              About
-            </a>
+            <button 
+              onClick={() => handleNavigation('explore')}
+              className={`transition-colors font-semibold ${
+                currentPage === 'explore' 
+                  ? 'text-blue-600' 
+                  : 'text-gray-800 hover:text-blue-600'
+              }`}
+            >
+              Explore
+            </button>
+            {/* Travel Planner link removed */}
           </div>
 
           {/* CTA Button */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button 
-              onClick={scrollToTravelPlanner}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 font-medium flex items-center space-x-2"
-            >
-              <MapPin className="w-4 h-4" />
-              <span>Plan Trip</span>
-            </button>
-          </div>
+          {/* Plan Trip button removed */}
 
           {/* Mobile menu button */}
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-blue-600 transition-colors"
+              className="text-gray-800 hover:text-blue-600 transition-colors"
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -67,34 +90,28 @@ const Navbar: React.FC = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
-              <a href="#home" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white/95 backdrop-blur-lg border-t border-gray-200/50" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.1) 1px, transparent 0)', backgroundSize: '20px 20px'}}>
+              <button 
+                onClick={() => handleNavigation('home')}
+                className={`block w-full text-left px-3 py-2 transition-colors ${
+                  currentPage === 'home' 
+                    ? 'text-blue-600 font-semibold' 
+                    : 'text-gray-800 hover:text-blue-600'
+                }`}
+              >
                 Home
-              </a>
-              <button 
-                onClick={() => {
-                  scrollToTravelPlanner();
-                  setIsMenuOpen(false);
-                }}
-                className="block w-full text-left px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors"
-              >
-                Travel Planner
               </button>
-              <a href="#features" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">
-                Features
-              </a>
-              <a href="#about" className="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">
-                About
-              </a>
               <button 
-                onClick={() => {
-                  scrollToTravelPlanner();
-                  setIsMenuOpen(false);
-                }}
-                className="block w-full text-left px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 font-medium mt-4"
+                onClick={() => handleNavigation('explore')}
+                className={`block w-full text-left px-3 py-2 transition-colors ${
+                  currentPage === 'explore' 
+                    ? 'text-blue-600 font-semibold' 
+                    : 'text-gray-800 hover:text-blue-600'
+                }`}
               >
-                Plan Trip
+                Explore
               </button>
+              {/* Travel Planner link and CTA removed in mobile */}
             </div>
           </div>
         )}
